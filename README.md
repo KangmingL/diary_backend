@@ -3,34 +3,34 @@
 
 ## **Users and accounts**
 ### Manage friends
-* [GET /users/:id/followers](./test.md)
-* [GET /users/:id/following]()
-* [POST /users/:id/following]()
-* [DELETE /users/:source_id/following/:target_id]()
-* [GET /users/:id/pending_friends]()
-* [POST /users/:source_id/send_request/:target_id]()
+* [GET api/users/:id/followers](./test.md)
+* [GET api/users/:id/following]()
+* [POST api/users/:id/following]()
+* [DELETE api/users/:source_id/following/:target_id]()
+* [GET api/users/:id/pending_friends]()
+* [POST api/users/:source_id/send_request/:target_id]()
 
 
 ### Account settings and info
-* [GET /account/:id/profile]()
-* [GET /account/:id/profile_image]()
-* [GET /account/:id/background_image]()
-* [GET /account/:id/description]()
-* [POST /account/update_profile_image]()
-* [POST /account/update_background_image]()
-* [POST /account/update_description]()
+* [GET api/account/:id/profile]()
+* [GET api/account/:id/profile_image]()
+* [GET api/account/:id/background_image]()
+* [GET api/account/:id/description]()
+* [POST api/account/update_profile_image]()
+* [POST api/account/update_background_image]()
+* [POST api/account/update_description]()
 
 ## **Posts**
-### Timelines
-* [GET /users/:id/posts]()
+### Feeds
+* [GET api/users/:id/userfeed]()
+* [GET api/users/:id/homefeed]()
 
 ### Manage posts
-* [POST /posts]()
-* [DELETE /posts/:id]()
+* [GET api/post/:id}]()
+* [DELETE api/post/:id]()
+* [POST api/user/:id/post]()
 
 ### Posts info
-* [GET /posts/:id/liking_users]()
-* [GET /posts/:id/replies]()
+* [GET api/post/:id/liking_users]()
+* [GET api/post/:id/replies]()
 
-### Interactions
-* [POST /users/]
