@@ -18,19 +18,31 @@ public class UserController {
     }
 
     // ******************* USERS MANAGEMENT *******************
+
+    // ****************** GET ALL USERS ******************
     @GetMapping
     public List<User> getUsers(){
         return userService.getUsers();
     }
 
+    // ****************** GET USER BY ID ******************
     @GetMapping(path = "{userId}")
     public User getUserById(@PathVariable Long userId) {return userService.getUserById(userId); }
 
+
+//    @GetMapping(path = "{userId}/count/followers")
+//    public ResponseEntity<Integer> getFollowerCount(@PathVariable Long userId){return userService.getFollowerCount(userId);}
+//
+//    @GetMapping(path = "{userId}/count/followings")
+//    public ResponseEntity<Integer> getFollowingCount(@PathVariable Long userId){return userService.getFollowingCount(userId);}
+
+    // ****************** New User ******************
     @PostMapping
     public ResponseEntity<User> registerNewUser(@RequestBody User user){
         return userService.addUser(user);
     }
 
+    // ****************** DELETE USER ******************
     @DeleteMapping(path = "{userId}")
     public ResponseEntity<User> deleteUser(@PathVariable("userId") Long userId){
         return userService.deleteUser(userId);

@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,27 +19,33 @@ public class Configuration {
     @Bean
     CommandLineRunner commandLineRunner(UserRepository userRepository, PostRepository postRepository){
         return args -> {
+            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
             User abby = new User(
                     "Abby",
                     "abby1@umd.edu",
-                    LocalDate.of(1999, 2, 11)
+                    new Timestamp((dateFormat.parse("02/12/1997").getTime())),
+                    true
             );
 
             User bob = new User(
                     "Bob",
                     "bob@umd.edu",
-                    LocalDate.of(1998, 11, 11)
+                    new Timestamp((dateFormat.parse("05/15/1991").getTime())),
+                    false
             );
             User cindy = new User(
                     "cindy_abc",
                     "cindy1@gmail.com",
-                    LocalDate.of(1998, 03, 9)
+                    new Timestamp((dateFormat.parse("11/14/1967").getTime())),
+                    false
             );
 
             User jack = new User(
                     "jacccck",
                     "jackcool@gmail.com",
-                    LocalDate.of(1999, 11, 1)
+                    new Timestamp((dateFormat.parse("10/13/1987").getTime())),
+                    false
             );
 
             userRepository.saveAll(

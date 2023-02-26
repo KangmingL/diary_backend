@@ -2,11 +2,10 @@ package com.kangming.diary_backend.user;
 
 import com.kangming.diary_backend.follower.Follower;
 import com.kangming.diary_backend.following.Following;
-import com.kangming.diary_backend.post.Post;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity(name = "users")
@@ -16,14 +15,24 @@ public class User implements Serializable {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE
     )
+
     @Column
     private long id;
+
     @Column
     private String userName;
     @Column
     private String email;
     @Column
-    private LocalDate dob;
+    private Timestamp dob;
+
+    @Column
+    private boolean isCelebrity;
+
+    @Column
+    private int followerCount;
+    @Column
+    private int followingCount;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId", orphanRemoval = true)
     private List<Follower> followers;
@@ -31,12 +40,17 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId", orphanRemoval = true)
     private List<Following> followings;
 
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+//    private List<Post> posts;
     public User() {}
 
-    public User(String userName, String email, LocalDate dob) {
+    public User(String userName, String email, Timestamp dob, boolean isCelebrity) {
         this.userName = userName;
         this.email = email;
         this.dob = dob;
+        this.followerCount = 0;
+        this.followingCount = 0;
+        this.isCelebrity = isCelebrity;
     }
 
     public long getId() {
@@ -51,7 +65,23 @@ public class User implements Serializable {
         return email;
     }
 
-    public LocalDate getDob() {
+    public List<Follower> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<Follower> followers) {
+        this.followers = followers;
+    }
+
+    public List<Following> getFollowings() {
+        return followings;
+    }
+
+    public void setFollowings(List<Following> followings) {
+        this.followings = followings;
+    }
+
+    public Timestamp getDob() {
         return dob;
     }
 
@@ -67,8 +97,40 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public void setDob(LocalDate dob) {
+    public void setDob(Timestamp dob) {
         this.dob = dob;
+    }
+
+    public int getFollowerCount() {
+        return followerCount;
+    }
+
+    public void setFollowerCount(int followerCount) {
+        this.followerCount = followerCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
+    }
+
+    public boolean isCelebrity() {
+        return isCelebrity;
+    }
+
+    public void setCelebrity(boolean celebrity) {
+        isCelebrity = celebrity;
+    }
+
+    public void incrementFollowingCount() {
+        followingCount ++;
+    }
+
+    public void incrementFollowerCount() {
+        followerCount ++;
     }
 
 
@@ -79,5 +141,14 @@ public class User implements Serializable {
                 ", userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
                 ", dob=" + dob + "}";
+    }
+
+
+    public void decrementFollowingCount() {
+        followingCount--;
+    }
+
+    public void decrementFollowerCount() {
+        followerCount--;
     }
 }

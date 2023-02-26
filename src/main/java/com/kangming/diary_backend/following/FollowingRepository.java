@@ -14,4 +14,9 @@ public interface FollowingRepository extends JpaRepository<Following, Long> {
 
     void deleteByUserIdAndFollowingId(Long userId, Long followingId);
 
+    @Query(value = "SELECT f.following_id FROM Following f " +
+            "INNER JOIN Users u ON f.following_id = u.id " +
+            "WHERE u.is_celebrity = true",
+            nativeQuery = true)
+    List<Long> getCelebritiesByUserId(Long userId);
 }

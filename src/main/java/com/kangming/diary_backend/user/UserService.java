@@ -38,7 +38,6 @@ public class UserService {
     public ResponseEntity<User> deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new IllegalStateException("user with id "+userId+" does not exists")
-
         );
         userRepository.deleteById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -64,4 +63,18 @@ public class UserService {
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+//    public ResponseEntity<Integer> getFollowerCount(Long userId) {
+//        User user = userRepository.findById(userId).orElseThrow(
+//                () -> new IllegalStateException("user with id "+userId+" does not exists")
+//        );
+//        return new ResponseEntity<>(user.getNumberOfFollowers(), HttpStatus.OK);
+//    }
+
+//    public ResponseEntity<Integer> getFollowingCount(Long userId) {
+//        User user = userRepository.findById(userId).orElseThrow(
+//                () -> new IllegalStateException("user with id "+userId+" does not exists")
+//        );
+//        return new ResponseEntity<>(user.getNumberOfFollowings(), HttpStatus.OK);
+//    }
 }

@@ -4,6 +4,7 @@ import com.kangming.diary_backend.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,7 +19,8 @@ public class FollowingService {
     public List<Long> getFollowingById(Long userId) {
         List<Long> followings = followingRepository.getFollowingsById(userId);
         if(followings.size() == 0){
-            throw new IllegalStateException("User with id "+userId+" has no followings!");
+//            throw new IllegalStateException("User with id "+userId+" has no followings!");
+            return new ArrayList<Long>();
         }
         return followings;
     }

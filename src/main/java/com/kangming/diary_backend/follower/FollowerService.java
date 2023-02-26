@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,9 +22,8 @@ public class FollowerService {
 
         List<Long> followers = followerRepository.getAllFollowersIdByUserId(userId);
         if(followers.size() == 0){
-            throw new IllegalStateException("User with ID "+userId+" has no followers!");
+            return new ArrayList<>();
         }
-        System.out.println(followers);
         return followers;
     }
 }

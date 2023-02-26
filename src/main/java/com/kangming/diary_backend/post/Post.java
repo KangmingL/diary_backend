@@ -1,6 +1,5 @@
 package com.kangming.diary_backend.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kangming.diary_backend.user.User;
 import jakarta.persistence.*;
 
@@ -14,19 +13,26 @@ public class Post {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE
     )
+//    @JsonView(View.Summary.class)
     private Long id;
+//    @JsonView(View.Summary.class)
     private String content;
+//    @JsonView(View.Summary.class)
     private Timestamp timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
-    private User user;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    @JsonView(View.Summary.class)
+//    @JsonIgnore
+//    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 
     public Post(String content, Timestamp timestamp, User user) {
         this.content = content;
         this.timestamp = timestamp;
-        this.user = user;
+//        this.user = user;
+        this.userId = user.getId();
     }
 
     public Post() {
@@ -48,12 +54,20 @@ public class Post {
         this.timestamp = timestamp;
     }
 
-    public User getUser() {
-        return user;
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
+
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Long getId() {

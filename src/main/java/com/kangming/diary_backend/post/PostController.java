@@ -1,7 +1,6 @@
 package com.kangming.diary_backend.post;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +36,7 @@ public class PostController {
     // ****************** GET POST BY ID ******************
 //    @Cacheable("post")
     @GetMapping("post/{postId}")
+//    @JsonView(View.Summary.class)
     public Post getPost(
             @PathVariable("postId") Long postId
     ){
@@ -45,6 +45,7 @@ public class PostController {
 
     // ****************** GET POSTS BY USERID ******************
     @GetMapping("user/{userId}/posts")
+//    @JsonView(View.Summary.class)
     public ResponseEntity<List<Post>> getPostsByUserId(
             @PathVariable("userId") Long userId
     ){
@@ -52,7 +53,8 @@ public class PostController {
     }
 
     // ****************** GET USER FEED ******************
-    @PostMapping("user/{userId}/userfeed")
+    @GetMapping("user/{userId}/userfeed")
+//    @JsonView(View.Summary.class)
     public ResponseEntity<List<Post>> getUserFeed(
             @PathVariable("userId") Long userId
     ){
@@ -60,7 +62,8 @@ public class PostController {
     }
 
     // ****************** GET HOME FEED ******************
-    @PostMapping("user/{userId}/homefeed")
+    @GetMapping("user/{userId}/homefeed")
+//    @JsonView(View.Summary.class)
     public ResponseEntity<List<Post>> getHomeFeed(
             @PathVariable("userId") Long userId
     ){
@@ -69,6 +72,7 @@ public class PostController {
 
     // ****************** GET ALL POSTS ******************
     @GetMapping("post")
+//    @JsonView(View.Summary.class)
     public List<Post> getAllPosts(){
         return postService.getAllPosts();
     }

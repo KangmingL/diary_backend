@@ -15,20 +15,22 @@ import java.util.List;
 
 @Service
 public class PostService {
-    private PostRepository postRepository;
-    private UserRepository userRepository;
-    private CacheHelper cacheHelper;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final CacheHelper cacheHelper;
     private String POST_KEY = "post:";
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    public PostService(PostRepository postRepository, UserRepository userRepository, CacheHelper cacheHelper) {
+    public PostService(PostRepository postRepository,
+                       UserRepository userRepository,
+                       CacheHelper cacheHelper) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.cacheHelper = cacheHelper;
     }
 
-
+    // ****************** CREATE NEW POST   ******************
     @Transactional
     public ResponseEntity<Post> createNewPost(Post newPost, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
@@ -36,18 +38,30 @@ public class PostService {
         );
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         newPost.setTimestamp(timestamp);
-        newPost.setUser(user);
+        newPost.setUserId(user.getId());
+
         // Update DB
         postRepository.saveAndFlush(newPost);
 
         // Cache new post
         cacheHelper.addPostToCache(newPost);
+
         // Update or create homeFeed
         cacheHelper.addPostToHomeFeed(userId, newPost);
         cacheHelper.addPostToUserFeed(userId, newPost);
+
+        // If user is a celebrity, then wait for other to retrieve post
+        if(user.isCelebrity()){
+
+        }
+        // if user is a normal user, then push post to followers
+        else{
+            cacheHelper.pushPostToFollowers(userId, newPost.getId());
+        }
         return new ResponseEntity<>(newPost, HttpStatus.CREATED);
     }
 
+    // ****************** DELETE POST BY ID ******************
     @Transactional
     public ResponseEntity<String> deletePostById(Long postId) {
         if(postRepository.existsById(postId)){
@@ -55,9 +69,11 @@ public class PostService {
         }else {
             throw new IllegalStateException("post with id " + postId + " does not exist!");
         }
+        cacheHelper.removePostFromCache(postId);
         return new ResponseEntity<>("Successfully deleted post with id: "+postId, HttpStatus.OK);
     }
 
+    // ****************** GET POST BY ID ******************
     public Post getPostById(Long postId) {
         String key = POST_KEY + postId;
         if(redisTemplate.hasKey(key)){
@@ -71,6 +87,7 @@ public class PostService {
         }
     }
 
+    // ****************** RETRIEVE USER FEED ******************
     public ResponseEntity<List<Post>> getUserFeed(Long userId){
         if(userRepository.existsById(userId)){
             return new ResponseEntity<>(cacheHelper.getUserFeedFromCache(userId), HttpStatus.OK);
@@ -79,6 +96,8 @@ public class PostService {
         }
     }
 
+
+    // ****************** RETRIEVE HOME FEED ******************
     public ResponseEntity<List<Post>> getHomeFeed(Long userId){
         if(userRepository.existsById(userId)){
             return new ResponseEntity<>(cacheHelper.getHomeFeedFromCache(userId), HttpStatus.OK);
