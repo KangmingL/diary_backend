@@ -1,14 +1,16 @@
 package com.kangming.diary_backend.follower;
 
-import com.kangming.diary_backend.following.FollowingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * FollowerService --- Service class that is used to handle specific backend logics.
+ * @author Kangming Luo
+ * */
 @Service
 public class FollowerService {
     private final FollowerRepository followerRepository;
@@ -18,12 +20,17 @@ public class FollowerService {
         this.followerRepository = followerRepository;
     }
 
-    public List<Long> getFollowersById(Long userId) {
-
+    /**
+     * Get all the followers of specified user.
+     * @param userId user id.
+     * @return http response contains all the followers' id.
+     * */
+    public ResponseEntity<List<Long>> getFollowersById(Long userId) {
         List<Long> followers = followerRepository.getAllFollowersIdByUserId(userId);
+        // No followers
         if(followers.size() == 0){
-            return new ArrayList<>();
+            return new ResponseEntity<>(new ArrayList<Long>(), HttpStatus.OK);
         }
-        return followers;
+        return new ResponseEntity<>(followers, HttpStatus.OK);
     }
 }

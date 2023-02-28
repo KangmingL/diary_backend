@@ -1,7 +1,10 @@
 package com.kangming.diary_backend.follower;
-
 import jakarta.persistence.*;
 
+/**
+ * Follower --- This class defines a user-follower relationship model in DB which contains a user and a follower.
+ * @author Kangming Luo
+ * */
 @Table
 @Entity
 public class Follower {
@@ -21,6 +24,8 @@ public class Follower {
 
     public Follower() {
     }
+
+    // ****************** GETTERS AND SETTERS ******************
 
     public Long getUserId() {
         return userId;

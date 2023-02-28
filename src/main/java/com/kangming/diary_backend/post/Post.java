@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 
-
+/**
+ * Post --- This is the Post class that defines the post behaviors and properties.
+ * @author Kangming Luo
+ * */
 @Entity(name = "post")
 @Table(name = "post")
 public class Post {
@@ -13,31 +16,28 @@ public class Post {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE
     )
-//    @JsonView(View.Summary.class)
+    @Column
     private Long id;
-//    @JsonView(View.Summary.class)
+
+    @Column
     private String content;
-//    @JsonView(View.Summary.class)
+
+    @Column
     private Timestamp timestamp;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    @JsonView(View.Summary.class)
-//    @JsonIgnore
-//    private User user;
     @Column(name = "user_id")
     private Long userId;
 
     public Post(String content, Timestamp timestamp, User user) {
         this.content = content;
         this.timestamp = timestamp;
-//        this.user = user;
         this.userId = user.getId();
     }
 
     public Post() {
     }
 
+    // ****************** GETTERS AND SETTERS ******************
     public String getContent() {
         return content;
     }
@@ -53,14 +53,6 @@ public class Post {
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
-
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
 
     public Long getUserId() {
         return userId;

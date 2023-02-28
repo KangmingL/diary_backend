@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @org.springframework.context.annotation.Configuration
@@ -25,6 +23,7 @@ public class Configuration {
                     "Abby",
                     "abby1@umd.edu",
                     new Timestamp((dateFormat.parse("02/12/1997").getTime())),
+                    "abc",
                     true
             );
 
@@ -32,12 +31,14 @@ public class Configuration {
                     "Bob",
                     "bob@umd.edu",
                     new Timestamp((dateFormat.parse("05/15/1991").getTime())),
+                    "abc",
                     false
             );
             User cindy = new User(
                     "cindy_abc",
                     "cindy1@gmail.com",
                     new Timestamp((dateFormat.parse("11/14/1967").getTime())),
+                    "a1b2c3",
                     false
             );
 
@@ -45,6 +46,7 @@ public class Configuration {
                     "jacccck",
                     "jackcool@gmail.com",
                     new Timestamp((dateFormat.parse("10/13/1987").getTime())),
+                    "password",
                     false
             );
 

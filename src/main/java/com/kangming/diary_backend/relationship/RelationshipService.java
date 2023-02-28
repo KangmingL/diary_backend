@@ -14,15 +14,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import static com.kangming.diary_backend.MyConstants.CELEBRITY_THRESHOLD;
 
-import java.util.List;
+import java.util.Optional;
 
+/**
+ * RelationshipService --- Service class that implements backend logics including follow logic and unfollow logic.
+ * @author Kangming Luo
+ * */
 @Service
 public class RelationshipService {
     private final FollowingRepository followingRepository;
     private final FollowerRepository followerRepository;
-
     private final UserRepository userRepository;
-
     private final CacheHelper cacheHelper;
     @Autowired
     public RelationshipService(FollowingRepository followingRepository,
@@ -35,21 +37,28 @@ public class RelationshipService {
         this.cacheHelper = cacheHelper;
     }
 
+    /**
+     * Allow user to follow a target user.
+     * @param userId user id.
+     * @param targetId target user id.
+     * */
     @Transactional
     public ResponseEntity<String> follow(Long userId, Long targetId){
         Follower follower = new Follower(targetId, userId);
         Following following = new Following(userId, targetId);
         followerRepository.save(follower);
         followingRepository.save(following);
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("User with id "+userId+" does not exists!")
-        );
-        User targetUser = userRepository.findById(targetId).orElseThrow(
-                () -> new IllegalStateException("User with id "+targetId+" does not exists!")
-        );
-//        user.getFollowings().add(following);
-//        targetUser.getFollowers().add(follower);
-//        userRepository.saveAll(List.of(user, targetUser));
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<String>("User with "+userId+" does not exist!", HttpStatus.BAD_REQUEST);
+        }
+        Optional<User> targetUserOptional = userRepository.findById(targetId);
+        if(targetUserOptional.isEmpty()){
+            return new ResponseEntity<String>("User with "+targetId+" does not exist!", HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+        User targetUser = targetUserOptional.get();
+        // Update following count and follower count.
         user.incrementFollowingCount();
         targetUser.incrementFollowerCount();
         if(targetUser.getFollowerCount() >= CELEBRITY_THRESHOLD)targetUser.setCelebrity(true);
@@ -58,21 +67,31 @@ public class RelationshipService {
         return new ResponseEntity<>("user "+ userId + " successfully followed "+targetId, HttpStatus.CREATED);
     }
 
+    /**
+     * Allow a user to unfollow a target user.
+     * @param userId user id
+     * @param targetId target user id
+     * @return return a response entity contains message
+     * */
     @Transactional
     public ResponseEntity<String> unfollow(Long userId, Long targetId) {
         followingRepository.deleteByUserIdAndFollowingId(userId, targetId);
         followerRepository.deleteByUserIdAndFollowerId(targetId, userId);
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("User with id "+userId+" does not exists!")
-        );
-        User targetUser = userRepository.findById(targetId).orElseThrow(
-                () -> new IllegalStateException("User with id "+targetId+" does not exists!")
-        );
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<String>("User with "+userId+" does not exist!", HttpStatus.BAD_REQUEST);
+        }
+        Optional<User> targetUserOptional = userRepository.findById(targetId);
+        if(targetUserOptional.isEmpty()){
+            return new ResponseEntity<String>("User with "+targetId+" does not exist!", HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+        User targetUser = targetUserOptional.get();
         user.decrementFollowingCount();
         targetUser.decrementFollowerCount();
         if(targetUser.getFollowerCount() < CELEBRITY_THRESHOLD)targetUser.setCelebrity(false);
         return new ResponseEntity<>(
-                "user "+userId+" unfollowed "+targetId, HttpStatus.OK
+                "User "+userId+" successfully unfollowed "+targetId, HttpStatus.OK
         );
     }
 }

@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.kangming.diary_backend.user.UserUtils.getUserUtil;
 
+/**
+ * UserService --- User service class implements backend functionalities.
+ * @author Kangming Luo
+ * */
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -20,61 +23,82 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // ******************** User Management ***********************
-    public List<User> getUsers(){return userRepository.findAll();}
-
-    public User getUserById(Long userId) {
-        return getUserUtil(userRepository, userId);
+    /**
+     * Get all the users in DB. Useful during testing.
+     * @return response entity contains a list of all users' info.
+     * */
+    public ResponseEntity<List<User>> getUsers(){
+        return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
     }
-    public ResponseEntity<User> addUser(User user) {
+
+    /**
+     * Get user entity by user id.
+     * @param userId user id.
+     * @return response entity include user info or null if not exists.
+     * */
+    public ResponseEntity<User> getUserById(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        else{
+            return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
+        }
+    }
+
+    /**
+     * Create and add a new user to DB.
+     * @param user new user entity.
+     * @return response entity with message.
+     * */
+    public ResponseEntity<String> addUser(User user) {
         Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
         if(userOptional.isPresent()){
-            throw new IllegalStateException("email taken");
+            return new ResponseEntity<>("Email was taken!", HttpStatus.CONFLICT);
         }
         userRepository.save(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>("Successfully create a new user!", HttpStatus.CREATED);
     }
 
-    public ResponseEntity<User> deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("user with id "+userId+" does not exists")
-        );
+    /**
+     * Delete user by id.
+     * @param userId user id.
+     * @return response entity indicates result.
+     * */
+    public ResponseEntity<String> deleteUser(Long userId) {
+        if(!userRepository.existsById(userId)){
+            return new ResponseEntity<>("No user with user id "+userId+" found in DB!", HttpStatus.BAD_REQUEST);
+        }
         userRepository.deleteById(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>("User with user id "+userId+" was deleted successfully!", HttpStatus.OK);
     }
 
+    /**
+     * Update user info.
+     * @param userId user id
+     * @param userName new username
+     * @param email new email
+     * */
     @Transactional
-    public ResponseEntity<User> updateUser(Long userId, String userName, String email) {
-        User user = userRepository.findById(userId).orElseThrow(
-                ()->new IllegalStateException("user with id "+userId+" does not exists!")
-        );
+    public ResponseEntity<String> updateUser(Long userId, String userName, String email, String password) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<>("User with user id "+userId+" not found in DB!", HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
         if(userName != null && userName.length() != 0 && !Objects.equals(userName, user.getUserName())){
             user.setUserName(userName);
         }else{
-            throw new IllegalStateException("Invalid username!");
+            return new ResponseEntity<>("Username had been taken!", HttpStatus.BAD_REQUEST);
         }
 
         if(email != null && email.length() != 0 && !Objects.equals(email, user.getEmail())){
-            Optional<User> userOptional = userRepository.findUserByEmail(email);
-            if(userOptional.isPresent()){
-                throw new IllegalStateException("email taken!");
+            if(!userRepository.existsUserByEmail(email)){
+                return new ResponseEntity<>("Email had been taken!", HttpStatus.BAD_REQUEST);
             }
             user.setEmail(email);
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        user.setPassword(password);
+        return new ResponseEntity<>("Successfully update user info!", HttpStatus.OK);
     }
-
-//    public ResponseEntity<Integer> getFollowerCount(Long userId) {
-//        User user = userRepository.findById(userId).orElseThrow(
-//                () -> new IllegalStateException("user with id "+userId+" does not exists")
-//        );
-//        return new ResponseEntity<>(user.getNumberOfFollowers(), HttpStatus.OK);
-//    }
-
-//    public ResponseEntity<Integer> getFollowingCount(Long userId) {
-//        User user = userRepository.findById(userId).orElseThrow(
-//                () -> new IllegalStateException("user with id "+userId+" does not exists")
-//        );
-//        return new ResponseEntity<>(user.getNumberOfFollowings(), HttpStatus.OK);
-//    }
 }

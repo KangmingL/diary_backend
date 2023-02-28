@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * UserController --- Controller class that is used to handle REST request related to users.
+ * @author Kangming Luo
+ * */
 @RestController
 @RequestMapping(path = "api/user")
 public class UserController {
@@ -17,53 +21,37 @@ public class UserController {
         this.userService = userService;
     }
 
-    // ******************* USERS MANAGEMENT *******************
-
-    // ****************** GET ALL USERS ******************
+    // ****************** GET ******************
     @GetMapping
-    public List<User> getUsers(){
+    public ResponseEntity<List<User>> getUsers(){
         return userService.getUsers();
     }
 
-    // ****************** GET USER BY ID ******************
     @GetMapping(path = "{userId}")
-    public User getUserById(@PathVariable Long userId) {return userService.getUserById(userId); }
+    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+        return userService.getUserById(userId);
+    }
 
-
-//    @GetMapping(path = "{userId}/count/followers")
-//    public ResponseEntity<Integer> getFollowerCount(@PathVariable Long userId){return userService.getFollowerCount(userId);}
-//
-//    @GetMapping(path = "{userId}/count/followings")
-//    public ResponseEntity<Integer> getFollowingCount(@PathVariable Long userId){return userService.getFollowingCount(userId);}
-
-    // ****************** New User ******************
+    // ****************** POST ******************
     @PostMapping
-    public ResponseEntity<User> registerNewUser(@RequestBody User user){
+    public ResponseEntity<String> registerNewUser(@RequestBody User user){
         return userService.addUser(user);
     }
 
-    // ****************** DELETE USER ******************
+    // ****************** DELETE ******************
     @DeleteMapping(path = "{userId}")
-    public ResponseEntity<User> deleteUser(@PathVariable("userId") Long userId){
+    public ResponseEntity<String> deleteUser(@PathVariable("userId") Long userId){
         return userService.deleteUser(userId);
     }
 
+    // ****************** PUT ******************
     @PutMapping(path = "{userId}")
-    public void updateUser(
+    public ResponseEntity<String> updateUser(
         @PathVariable("userId") Long userId,
         @RequestParam(required = false) String userName,
-        @RequestParam(required = false) String email
+        @RequestParam(required = false) String email,
+        @RequestParam(required = false) String password
     ){
-        userService.updateUser(userId, userName, email);
+        return userService.updateUser(userId, userName, email, password);
     }
-
-
-// ******************* FRIENDSHIP MANAGEMENT *******************
-
-//    @GetMapping(path = "{userId}/following")
-//    public void getFollowing(
-//            @PathVariable("userId") Long userId
-//    ){
-//        userService.getFollowing(userId);
-//    }
 }
